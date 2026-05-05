@@ -21,6 +21,7 @@ app.use("/api/chat", chat);
 app.use(cors());
 app.use(express.json());
 
+
 const auth = require("./routes/auth");
 const upload = require("./routes/upload");
 const chat = require("./routes/chat");
