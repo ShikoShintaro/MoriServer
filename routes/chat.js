@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const fetch = require("node-fetch");
 
 router.post("/", async (req, res) => {
     try {
