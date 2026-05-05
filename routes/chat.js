@@ -5,26 +5,35 @@ router.post("/", async (req, res) => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
 
-    const response = await fetch(process.env.MORI_API_KEY, {
+    const response = await fetch(process.env.MORI_API_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: req.body.message }),
-      signal: controller.signal
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: req.body.message,
+      }),
+      signal: controller.signal,
     });
 
     clearTimeout(timeout);
 
+    if (!response.ok) {
+      return res.status(500).json({
+        reply: "MORI API error",
+      });
+    }
+
     const data = await response.json();
 
     return res.json({
-      reply: data.response || "No response from MORI"
+      reply: data.response || "No response from MORI",
     });
-
   } catch (err) {
     console.error("AI ERROR:", err.message);
 
     return res.status(500).json({
-      reply: "MORI is currently offline"
+      reply: "MORI is currently offline",
     });
   }
 });
