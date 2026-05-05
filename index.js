@@ -14,8 +14,23 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/upload", require("./routes/upload"));
 app.use("/api/chat", require("./routes/chat"));
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("Mongo Connected"))
-  .catch(err => console.log(err));
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectDB() {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(process.env.MONGO_URI).then(m => m);
+  }
+
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
+
+connectDB();
 
 module.exports = serverless(app);
