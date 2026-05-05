@@ -6,12 +6,12 @@ const cors = require("cors");
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
-
 const auth = require("./routes/auth");
 const upload = require("./routes/upload");
 const chat = require("./routes/chat");
+
+app.use(cors());
+app.use(express.json());
 
 app.use("/api/auth", auth);
 app.use("/api/upload", upload);
