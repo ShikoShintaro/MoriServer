@@ -10,19 +10,32 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// IMPORT ROUTES SAFELY
+app.get("/", (req, res) => {
+  res.json({
+    status: "OK",
+    message: "MORI API is running 🚀"
+  });
+});
+
+// IMPORT ROUTES
 const authRoute = require("./routes/auth");
 const uploadRoute = require("./routes/upload");
 const chatRoute = require("./routes/chat");
 
-// DEBUG CHECK (THIS WILL SAVE YOU HOURS)
+// DEBUG CHECK
 if (!authRoute || !uploadRoute || !chatRoute) {
   throw new Error("One or more routes are undefined. Check exports in routes.");
 }
 
+// API ROUTES
 app.use("/api/auth", authRoute);
 app.use("/api/upload", uploadRoute);
 app.use("/api/chat", chatRoute);
+
+// OPTIONAL: 404 handler (prevents hanging)
+app.use((req, res) => {
+  res.status(404).json({ error: "Route not found" });
+});
 
 // Mongo cache
 let cached = global.mongoose || (global.mongoose = { conn: null, promise: null });
