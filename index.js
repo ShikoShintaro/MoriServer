@@ -2,8 +2,8 @@ require("dotenv").config();
 
 const express = require("express");
 const serverless = require("serverless-http");
-const mongoose = require("mongoose");
 const cors = require("cors");
+const mongoose = require("mongoose");
 
 const app = express();
 
@@ -15,7 +15,7 @@ app.use("/api/upload", require("./routes/upload"));
 app.use("/api/chat", require("./routes/chat"));
 
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log("Mongo Connected"))
-    .catch(err => console.log(err));
+  .then(() => console.log("Mongo Connected"))
+  .catch(err => console.log(err));
 
 module.exports = serverless(app);
