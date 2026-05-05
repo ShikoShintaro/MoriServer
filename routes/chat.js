@@ -5,7 +5,7 @@ router.post("/", async (req, res) => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
 
-    const response = await fetch("https://8000-01khvck0a4b5095r1210t1kstp.cloudspaces.litng.ai/chat", {
+    const response = await fetch(process.env.MORI_API_KEY, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: req.body.message }),
