@@ -11,41 +11,42 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json({
+  return res.json({
     status: "OK",
-    message: "MORI API is running 🚀"
+    message: "MORI API is running"
   });
 });
 
-// IMPORT ROUTES
 const authRoute = require("./routes/auth");
 const uploadRoute = require("./routes/upload");
 const chatRoute = require("./routes/chat");
 
-// DEBUG CHECK
 if (!authRoute || !uploadRoute || !chatRoute) {
-  throw new Error("One or more routes are undefined. Check exports in routes.");
+  throw new Error("Route import failed. Check exports in /routes.");
 }
 
-// API ROUTES
 app.use("/api/auth", authRoute);
 app.use("/api/upload", uploadRoute);
 app.use("/api/chat", chatRoute);
 
-// OPTIONAL: 404 handler (prevents hanging)
 app.use((req, res) => {
-  res.status(404).json({ error: "Route not found" });
+  return res.status(404).json({
+    error: "Route not found"
+  });
 });
 
-// Mongo cache
-let cached = global.mongoose || (global.mongoose = { conn: null, promise: null });
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
 
 async function connectDB() {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(process.env.MONGO_URI, {
-      bufferCommands: false,
+      bufferCommands: false
     });
   }
 
@@ -53,6 +54,8 @@ async function connectDB() {
   return cached.conn;
 }
 
-connectDB().catch(console.error);
+connectDB().catch((err) => {
+  console.error("MongoDB connection error:", err);
+});
 
 module.exports = serverless(app);
