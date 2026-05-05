@@ -1,11 +1,18 @@
 const router = require("express").Router();
+const fetch = require("node-fetch");
 
 router.post("/", async (req, res) => {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
+    const timeout = setTimeout(() => controller.abort(), 10000);
 
-    const response = await fetch(process.env.MORI_API_URL, {
+    const apiUrl = process.env.MORI_API_URL;
+
+    if (!apiUrl) {
+      return res.status(500).json({ reply: "Missing MORI_API_URL" });
+    }
+
+    const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -18,19 +25,24 @@ router.post("/", async (req, res) => {
 
     clearTimeout(timeout);
 
-    if (!response.ok) {
+    const text = await response.text(); // safer debugging
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
       return res.status(500).json({
-        reply: "MORI API error",
+        reply: "Invalid response from MORI API",
+        raw: text,
       });
     }
 
-    const data = await response.json();
-
     return res.json({
-      reply: data.response || "No response from MORI",
+      reply: data.response ?? "No response from MORI",
     });
+
   } catch (err) {
-    console.error("AI ERROR:", err.message);
+    console.error("AI ERROR:", err);
 
     return res.status(500).json({
       reply: "MORI is currently offline",
