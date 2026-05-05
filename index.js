@@ -18,7 +18,3 @@ app.use("/api/chat", require("./routes/chat"));
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("Mongo Connected"))
     .catch(err => console.log(err));
-
-app.listen(3000, () => {
-    console.log("Server running on port 3000");
-});
