@@ -10,23 +10,22 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// IMPORT ROUTES SAFELY
 const authRoute = require("./routes/auth");
 const uploadRoute = require("./routes/upload");
 const chatRoute = require("./routes/chat");
 
+// DEBUG CHECK (THIS WILL SAVE YOU HOURS)
 if (!authRoute || !uploadRoute || !chatRoute) {
-  throw new Error("One or more route imports failed. Check exports.");
+  throw new Error("One or more routes are undefined. Check exports in routes.");
 }
 
 app.use("/api/auth", authRoute);
 app.use("/api/upload", uploadRoute);
 app.use("/api/chat", chatRoute);
 
-let cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
+// Mongo cache
+let cached = global.mongoose || (global.mongoose = { conn: null, promise: null });
 
 async function connectDB() {
   if (cached.conn) return cached.conn;
@@ -41,8 +40,6 @@ async function connectDB() {
   return cached.conn;
 }
 
-connectDB().catch((err) => {
-  console.error("MongoDB connection error:", err);
-});
+connectDB().catch(console.error);
 
 module.exports = serverless(app);
