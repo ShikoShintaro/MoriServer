@@ -97,7 +97,7 @@ router.post("/verify", async (req, res) => {
         console.log("TYPE DB: ", typeof user.otp)
         console.log("TYPE INPUT: ", typeof code)
 
-        if (user.otp !== code) {
+        if (String(user.otp) !== String(code)) {
             return res.status(400).json({ message: "Invalid Code" });
         }
 
@@ -160,7 +160,7 @@ router.post("/verify-reset", async (req, res) => {
             return res.status(400).json({ message: "User not found" });
         }
 
-        if (user.resetOtp !== code) {
+        if (String(user.resetOtp) !== String(code)) {
             return res.status(400).json({ message: "Invalid code" });
         }
 

@@ -1,21 +1,22 @@
-const { Resend } = require("resend");
+const axios = require("axios");
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-const sendCode = async (to, code) => {
+const sendCode = async (email, code, type) => {
     try {
-        const result = await resend.emails.send({
-            from: "MORI AI <onboarding@resend.dev>",
-            to,
-            subject: "MORI AI Verification Code",
-            text: `Your Verification code is ${code}`
-        });
+        const res = await axios.post(
+            "https://8000-01khvck0a4b5095r1210t1kstp.cloudspaces.litng.ai/send-otp",
+            {
+                email,
+                code,
+                type
+            }
+        );
 
-        console.log("OTP sent:", result);
+        console.log("FastAPI email sent:", res.data);
+
         return true;
 
     } catch (err) {
-        console.log("Resend error:", err);
+        console.log("Email send error:", err.message);
         return false;
     }
 };
