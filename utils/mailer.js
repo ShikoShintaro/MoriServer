@@ -1,31 +1,22 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 10000
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendCode = async (to, code) => {
     try {
-        await transporter.sendMail({
-            from: `"MORI AI TEAM" <${process.env.EMAIL_USER}>`,
+        await resend.emails.send({
+            from: "MORI AI",
             to,
             subject: "MORI AI Verification Code",
             text: `Your Verification code is ${code}`
         });
 
-        console.log("OTP email sent to:", to);
+        console.log("OTP sent to:", to);
+        return true;
+
     } catch (err) {
-        console.log("Email send error:", err);
-        throw err;
+        console.log("Resend error:", err);
+        return false;
     }
 };
 
