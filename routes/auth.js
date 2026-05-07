@@ -37,11 +37,11 @@ router.post("/register", async (req, res) => {
 
         await newUser.save();
 
-        sendCode(email, code).catch((err) => {
-            console.log("EMAIL ERROR:", err.message);
-        });
-
+        sendCode(email, code, "verify")
+            .then(() => console.log("OTP email sent"))
+            .catch(err => console.log("Email error:", err));
         return res.json({ message: "Verification code sent!" });
+        
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -137,7 +137,7 @@ router.post("/forgot-password", async (req, res) => {
 
         await user.save();
 
-        sendCode(email, code)
+        sendCode(email, code, "reset")
             .then(() => console.log("OTP email sent"))
             .catch(err => console.log("Email error:", err));
 
