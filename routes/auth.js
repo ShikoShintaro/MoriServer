@@ -121,7 +121,7 @@ router.post("/forgot-password", async (req, res) => {
         const { email } = req.body;
 
         if (!email) {
-            return res.status(400).json({ message: "Email is requied" });
+            return res.status(400).json({ message: "Email is required" });
         }
 
         const user = await User.findOne({ email });
@@ -133,15 +133,18 @@ router.post("/forgot-password", async (req, res) => {
         const code = generateOtp();
 
         user.resetOtp = code;
-        user.resetOtpExpires = Date.now() + 5 * 60 * 1000
+        user.resetOtpExpires = Date.now() + 5 * 60 * 1000;
 
         await user.save();
 
-        await sendCode(email, code);
+        sendCode(email, code)
+            .then(() => console.log("OTP email sent"))
+            .catch(err => console.log("Email error:", err));
 
         return res.json({ message: "Reset OTP sent!" });
+
     } catch (err) {
-        return res.status(500).json({ error: err.message })
+        return res.status(500).json({ error: err.message });
     }
 });
 
