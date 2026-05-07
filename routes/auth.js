@@ -147,6 +147,8 @@ router.post("/forgot-password", async (req, res) => {
 
 router.post("/verify-reset", async (req, res) => {
     try {
+        console.log(req.body);
+
         const { email, code } = req.body;
 
         const user = await User.findOne({ email });
