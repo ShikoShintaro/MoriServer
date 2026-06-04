@@ -2,28 +2,28 @@ const axios = require("axios");
 
 const sendCode = async (email, code, type) => {
     try {
+        console.log("SENDING TO FASTAPI:", {
+            email,
+            code,
+            type
+        });
+
         const res = await axios.post(
-            "https://8000-01khvck0a4b5095r1210t1kstk.cloudspaces.litng.ai/send-otp",
+            "https://8000-01khvck0a4b5095r1210t1kstp.cloudspaces.litng.ai/send-otp",
             { email, code, type },
             {
-                headers: { "Content-Type": "application/json" },
-                timeout: 10000
+                headers: {
+                    "Content-Type": "application/json"
+                }
             }
         );
 
-        console.log("FastAPI RESPONSE:", res.data);
-
-        if (res.status === 200 && res.data?.success !== false) {
-            return true;
-        }
-
-        return false;
+        console.log("FastAPI SUCCESS:", res.data);
+        return true;
 
     } catch (err) {
         console.log("FASTAPI ERROR STATUS:", err.response?.status);
         console.log("FASTAPI ERROR DATA:", err.response?.data);
-        console.log("FASTAPI NETWORK ERROR:", err.message);
-
         return false;
     }
 };
