@@ -130,7 +130,7 @@ router.post("/verify", async (req, res) => {
             });
         }
 
-        if (user.otpexpires < Date.now()) {
+        if (user.otpExpires < Date.now()) {
             return res.status(400).json({
                 message : "Code expired"
             });
