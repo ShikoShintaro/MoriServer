@@ -12,38 +12,63 @@ router.post("/register", async (req, res) => {
         const { username, email, password } = req.body;
 
         if (!username || !email || !password) {
-            return res.status(400).json({ message: "all fields required" })
+            return res.status(400).json({
+                message: "All fields required"
+            });
         }
 
         const existingUser = await User.findOne({ email });
 
-        if (existingUser) {
-            return res.status(400).json({ message: "User already exists" })
+        const code = generateOtp();
+        const otpExpires = Date.now() + 5 * 60 * 1000;
+
+        if (existingUser && existingUser.verified) {
+            return res.status(409).json({
+                message: "Email already registered and verified",
+                status: "EXISTS"
+            });
+        }
+        if (existingUser && !existingUser.verified) {
+
+            existingUser.username = username;
+            existingUser.password = await bcrypt.hash(password, 10);
+            existingUser.otp = code;
+            existingUser.otpExpires = otpExpires;
+
+            await existingUser.save();
+
+            sendCode(email, code, "verify");
+
+            return res.json({
+                message: "OTP resent",
+                status: "PENDING_OTP"
+            });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-
-        const code = generateOtp();
 
         const newUser = new User({
             username,
             email,
             password: hashedPassword,
             otp: code,
-            otpExpires: Date.now() + 5 * 60 * 1000
+            otpExpires: otpExpires,
+            verified: false
         });
-
-        console.log("SAVING OTP", code);
 
         await newUser.save();
 
-        sendCode(email, code, "verify")
-            .then(() => console.log("OTP email sent"))
-            .catch(err => console.log("Email error:", err));
-        return res.json({ message: "Verification code sent!" });
+        sendCode(email, code, "verify");
+
+        return res.json({
+            message: "Verification Code Sent",
+            status: "NEW"
+        });
 
     } catch (err) {
-        return res.status(500).json({ error: err.message });
+        return res.status(500).json({
+            message: err.message
+        });
     }
 });
 
@@ -95,23 +120,26 @@ router.post("/verify", async (req, res) => {
     try {
         const { email, code } = req.body;
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne ({
+            email   
+        });
 
         if (!user) {
-            return res.status(400).json({ message: "User not found " });
+            return res.status(400).json({
+                message : "User not found"
+            });
         }
 
-        console.log("DB OTP: ", user.otp);
-        console.log("INPUT OTP: ", code);
-        console.log("TYPE DB: ", typeof user.otp)
-        console.log("TYPE INPUT: ", typeof code)
-
-        if (user.otpExpires < Date.now()) {
-            return res.status(400).json({ message: "Code expired" });
+        if (user.otpexpires < Date.now()) {
+            return res.status(400).json({
+                message : "Code expired"
+            });
         }
 
         if (String(user.otp) !== String(code)) {
-            return res.status(400).json({ message: "Invalid Code" });
+            return res.status(400).json({
+                message : "Invalid Code"
+            });
         }
 
         user.verified = true;
@@ -120,10 +148,14 @@ router.post("/verify", async (req, res) => {
 
         await user.save();
 
-        return res.json({ message: "Verified Successfully" });
-        
+        return res.json({
+            message : "Account verified successfully"
+        });
+
     } catch (err) {
-        return res.status(500).json({ error: err.message });
+        return res.status(500).json({
+            error : err.message
+        })
     }
 });
 
@@ -210,6 +242,8 @@ router.post("/reset-password", async (req, res) => {
         return res.status(500).json({ error: err.message });
     }
 });
+
+
 
 router.post("/student-info", async (req, res) => {
     try {
