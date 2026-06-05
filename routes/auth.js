@@ -41,7 +41,7 @@ router.post("/register", async (req, res) => {
             .then(() => console.log("OTP email sent"))
             .catch(err => console.log("Email error:", err));
         return res.json({ message: "Verification code sent!" });
-        
+
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -106,12 +106,12 @@ router.post("/verify", async (req, res) => {
         console.log("TYPE DB: ", typeof user.otp)
         console.log("TYPE INPUT: ", typeof code)
 
-        if (String(user.otp) !== String(code)) {
-            return res.status(400).json({ message: "Invalid Code" });
-        }
-
         if (user.otpExpires < Date.now()) {
             return res.status(400).json({ message: "Code expired" });
+        }
+
+        if (String(user.otp) !== String(code)) {
+            return res.status(400).json({ message: "Invalid Code" });
         }
 
         user.verified = true;
@@ -119,7 +119,9 @@ router.post("/verify", async (req, res) => {
         user.otpExpires = null;
 
         await user.save();
+
         return res.json({ message: "Verified Successfully" });
+        
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -167,10 +169,6 @@ router.post("/verify-reset", async (req, res) => {
 
         if (!user) {
             return res.status(400).json({ message: "User not found" });
-        }
-
-        if (String(user.resetOtp) !== String(code)) {
-            return res.status(400).json({ message: "Invalid code" });
         }
 
         if (user.resetOtpExpires < Date.now()) {
