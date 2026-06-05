@@ -49,17 +49,23 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
     try {
-        const email = req.body?.email?.trim();
+
+        const login = req.body?.email?.trim(); // FIXED
         const password = req.body?.password?.trim();
 
-        console.log("Email: ", email);
-        console.log("Password ", password);
+        console.log("Login: ", login);
+        console.log("Password: ", password);
 
-        if (!email || !password) {
+        if (!login || !password) {
             return res.status(400).json({ message: "All fields required!" });
         }
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({
+            $or: [
+                { email: login },
+                { username: login }
+            ]
+        });
 
         if (!user) {
             return res.status(400).json({ message: "User not found" });
@@ -75,12 +81,15 @@ router.post("/login", async (req, res) => {
             return res.status(400).json({ message: "Account not verified" });
         }
 
-        return res.json({ message: "Login Success", email: user.email });
+        return res.json({
+            message: "Login Success",
+            email: user.email
+        });
 
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
-})
+});
 
 router.post("/verify", async (req, res) => {
     try {
