@@ -12,7 +12,9 @@ app.use(express.json());
 const authRoute = require("./routes/auth");
 const uploadRoute = require("./routes/upload");
 const chatRoute = require("./routes/chat");
+const notificationsRoute = require("./routes/notifications");
 
+app.use("/api/notifications", notificationsRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/upload", uploadRoute);
 app.use("/api/chat", chatRoute);
