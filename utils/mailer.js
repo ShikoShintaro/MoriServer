@@ -9,7 +9,7 @@ const sendCode = async (email, code, type) => {
         });
 
         const res = await axios.post(
-            "https://8000-01khvck0a4b5095r1210t1kstp.cloudspaces.litng.ai/send-otp",
+            process.env.MORI_EMAIL_SENDER,
             { email, code, type },
             {
                 headers: {
