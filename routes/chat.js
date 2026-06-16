@@ -24,7 +24,7 @@ router.post("/", async (req, res) => {
 
     clearTimeout(timeout);
 
-    const text = await response.text(); // safer debugging
+    const text = await response.text();
 
     let data;
     try {
