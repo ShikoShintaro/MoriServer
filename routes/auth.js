@@ -120,25 +120,25 @@ router.post("/verify", async (req, res) => {
     try {
         const { email, code } = req.body;
 
-        const user = await User.findOne ({
-            email   
+        const user = await User.findOne({
+            email
         });
 
         if (!user) {
             return res.status(400).json({
-                message : "User not found"
+                message: "User not found"
             });
         }
 
         if (user.otpExpires < Date.now()) {
             return res.status(400).json({
-                message : "Code expired"
+                message: "Code expired"
             });
         }
 
         if (String(user.otp) !== String(code)) {
             return res.status(400).json({
-                message : "Invalid Code"
+                message: "Invalid Code"
             });
         }
 
@@ -149,12 +149,12 @@ router.post("/verify", async (req, res) => {
         await user.save();
 
         return res.json({
-            message : "Account verified successfully"
+            message: "Account verified successfully"
         });
 
     } catch (err) {
         return res.status(500).json({
-            error : err.message
+            error: err.message
         })
     }
 });
@@ -249,8 +249,8 @@ router.post("/student-info", async (req, res) => {
     try {
         const { email, fullName, course, birthdate, section, year } = req.body;
 
-        if (!email) {
-            return res.status(400).json({ message: "Email required" });
+        if (!email || !fullName || !course || !birthdate || !section || !year) {
+            return res.status(400).json({ message: "All fields required" });
         }
 
         const user = await User.findOne({ email });
