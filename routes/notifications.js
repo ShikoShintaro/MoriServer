@@ -18,7 +18,8 @@ router.post("/send", async (req, res) => {
         const newEvent = await Event.create({
             title,
             message,
-            topic
+            topic,
+            priority : priority || "normal"
         });
 
         console.log("NEW EVENT SAVED", {
@@ -66,6 +67,6 @@ router.get("/latest", async (req, res) => {
             message : err.message
         });
     }
-})
+});
 
 module.exports = router;

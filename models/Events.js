@@ -10,6 +10,12 @@ const eventSchema = new mongoose.Schema({
         default : "announcement"
     },
 
+    priority: {
+        type : String,
+        enum : ["low", "normal", "high"],
+        default: "normal"
+    },
+
     createdAt : {
         type : Date,
         default : Date.now
