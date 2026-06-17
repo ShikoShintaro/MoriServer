@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Inbox = require("../models/Inbox.js");
 
-router.post("/inbox/send", async (req, res) => {
+router.post("/send", async (req, res) => {
     try {
         const { recipientEmail, title, message, type } = req.body;
 
@@ -34,7 +34,7 @@ router.post("/inbox/send", async (req, res) => {
     }
 });
 
-router.get("/inbox/:email", async (req, res) => {
+router.get("/:email", async (req, res) => {
     try {
         const { email } = req.params;
 
@@ -54,7 +54,7 @@ router.get("/inbox/:email", async (req, res) => {
     }
 });
 
-router.post("/inbox/read/:id", async (req, res) => {
+router.post("/read/:id", async (req, res) => {
     await Inbox.findByIdAndUpdate(req.params.id, {
         isRead : true
     });
