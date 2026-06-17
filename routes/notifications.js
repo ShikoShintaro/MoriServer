@@ -54,7 +54,7 @@ router.get("/latest", async (req, res) => {
 
         const events = await Event.find(query)
             .sort({ createdAt : -1 })
-            .limit(20)
+            .limit(20);
 
         return res.json({
             success : true,
