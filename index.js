@@ -15,8 +15,10 @@ const chatRoute = require("./routes/chat");
 const notificationsRoute = require("./routes/notifications");
 const userGetRoute = require("./routes/user-get");
 const inboxRoute = require("./routes/inbox");
-const adminDashboardRoute = require("./routes/admin-dashboard")
+const adminDashboardRoute = require("./routes/admin-dashboard");
+const adminAuthRoute = require("./routes/admin-auth");
 
+app.use("/api/admin", adminAuthRoute)
 app.use("/api/users", userGetRoute);
 app.use("/api/notifications", notificationsRoute);
 app.use("/api/auth", authRoute);
