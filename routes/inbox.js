@@ -35,13 +35,30 @@ router.post("/send", async (req, res) => {
     }
 });
 
+router.get("/", async (req, res) => {
+    try {
+        const messages = await Inbox.find()
+            .sort({ createdAt : -1 });
+
+        res.json({
+            success : true,
+            messages
+        });
+    } catch (err) {
+        res.status(500).json({
+            success : false,
+            message : err.message
+        });
+    }
+})
+
 
 // GET MESSAGES BY EMAIL
 router.get("/:email", async (req, res) => {
     try {
         const messages = await Inbox.find({
             recipientEmail: req.params.email
-        }).sort({ createdAt: -1 }); // FIXED (was "created")
+        }).sort({ createdAt: -1 });
 
         return res.json({
             success: true,
@@ -55,6 +72,32 @@ router.get("/:email", async (req, res) => {
         });
     }
 });
+
+router.delete("/:id", async (req, res) => {
+    try {
+        const deleted = await Inbox.findByIdAndDelete(
+            req.params.id
+        );
+
+        if (!deleted) {
+            return res.status(404).json({
+                success : false,
+                messages : "Message not found"
+            });
+        }
+
+        res.json({
+            success : true,
+            message : "Message deleted"
+        }); 
+        
+    } catch (err) {
+        res.status(500).json({
+            success : false,
+            message : err.message
+        })
+    }
+})
 
 
 // MARK AS READ

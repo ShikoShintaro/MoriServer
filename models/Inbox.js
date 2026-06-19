@@ -7,8 +7,15 @@ const inboxSchema = new mongoose.Schema({
         index: true
     },
 
-    title: String,
-    message: String,
+    title: {
+        type: String,
+        required: true
+    },
+
+    message: {
+        type: String,
+        required: true
+    },
 
     type: {
         type: String,
