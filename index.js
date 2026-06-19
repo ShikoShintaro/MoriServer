@@ -14,7 +14,8 @@ const uploadRoute = require("./routes/upload");
 const chatRoute = require("./routes/chat");
 const notificationsRoute = require("./routes/notifications");
 const userGetRoute = require("./routes/user-get");
-const inboxRoute = require("./routes/inbox")
+const inboxRoute = require("./routes/inbox");
+const adminDashboardRoute = require("./routes/admin-dashboard")
 
 app.use("/api/users", userGetRoute);
 app.use("/api/notifications", notificationsRoute);
@@ -22,6 +23,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/upload", uploadRoute);
 app.use("/api/chat", chatRoute);
 app.use("/api/inbox", inboxRoute);
+app.use("/api/admin/dashboard", adminDashboardRoute);
 
 app.get("/", (req, res) => {
   res.json({

@@ -4,8 +4,9 @@ const Event = require("../models/Events");
 
 router.post("/send", async (req, res) => {
     try {
+
         const {
-            title, message, topic
+            title, message, topic, priority
         } = req.body;
 
         if (!title || !message || !topic) {
