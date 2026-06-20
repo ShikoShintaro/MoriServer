@@ -6,7 +6,7 @@ const User = require('../models/User');
 const Event = require('../models/Events');
 const Inbox = require('../models/Inbox');
 
-const API = process.env.MORI_API_URL
+const API = process.env.MORI_API_KEY
 
 router.get("/", async (req, res) => {
     try {
