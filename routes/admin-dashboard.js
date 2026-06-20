@@ -84,7 +84,7 @@ router.get("/", async (req, res) => {
             },
 
             server : {
-                status : "online",
+                status : "Online",
                 time : new Date()
             },
 
