@@ -5,6 +5,8 @@ const User = require('../models/User');
 const Event = require('../models/Events');
 const Inbox = require('../models/Inbox');
 
+const API = process.env.MORI_API_KEY
+
 router.get("/", async (req, res) => {
     try {
         const totalUsers = await User.countDocuments();
@@ -31,6 +33,16 @@ router.get("/", async (req, res) => {
         const newMessagesToday = await Inbox.countDocuments({
             createdAt : { $gte : today }
         });
+
+        let moriStatus = "unknown";
+
+        try {
+            const response = await fetch(`${API}/admin/status`);
+            const data = await response.json();
+            moriStatus = data.status;
+        } catch (err) {
+            console.log("FastAPI not Reachable:", err.message);
+        }
 
         res.json({
             success : true,
@@ -73,7 +85,12 @@ router.get("/", async (req, res) => {
             server : {
                 status : "online",
                 time : new Date()
+            },
+
+            mori : {
+                status : moriStatus
             }
+
         });
 
     } catch (err) {
