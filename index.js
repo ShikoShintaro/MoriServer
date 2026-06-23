@@ -17,6 +17,7 @@ const userGetRoute = require("./routes/user-get");
 const inboxRoute = require("./routes/inbox");
 const adminDashboardRoute = require("./routes/admin-dashboard");
 const adminAuthRoute = require("./routes/admin-auth");
+const aiControlRoute = require("./routes/ai-control");
 
 app.use("/api/admin", adminAuthRoute)
 app.use("/api/users", userGetRoute);
@@ -26,6 +27,7 @@ app.use("/api/upload", uploadRoute);
 app.use("/api/chat", chatRoute);
 app.use("/api/inbox", inboxRoute);
 app.use("/api/admin/dashboard", adminDashboardRoute);
+app.use("/api/admin/ai-control", aiControlRoute);
 
 app.get("/", (req, res) => {
   res.json({

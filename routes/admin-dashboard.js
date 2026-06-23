@@ -1,12 +1,21 @@
-require('dotenv').config();
-const express = require('express');
+require("dotenv").config();
+const express = require("express");
 const router = express.Router();
 
-const User = require('../models/User');
-const Event = require('../models/Events');
-const Inbox = require('../models/Inbox');
+let fetch;
+if (typeof global.fetch === "function") {
+    fetch = global.fetch;
+} else {
+    fetch = (...args) =>
+        import("node-fetch").then(({ default: fetch }) => fetch(...args));
+}
 
-const API = process.env.MORI_API_KEY
+const User = require("../models/User");
+const Event = require("../models/Events");
+const Inbox = require("../models/Inbox");
+
+// ⚠️ KEEP YOUR ORIGINAL VARIABLE NAME
+const API = process.env.MORI_API_KEY;
 
 router.get("/", async (req, res) => {
     try {
@@ -14,25 +23,23 @@ router.get("/", async (req, res) => {
         const totalEvents = await Event.countDocuments();
         const totalMessages = await Inbox.countDocuments();
 
-        const lastUser = await User.findOne().sort({ createdAt : -1 });
-        const lastEvent = await Event.findOne().sort({ createdAt : -1 });
-        const lastMessage = await Inbox.findOne().sort({ createdAt : -1 });
+        const lastUser = await User.findOne().sort({ createdAt: -1 });
+        const lastEvent = await Event.findOne().sort({ createdAt: -1 });
+        const lastMessage = await Inbox.findOne().sort({ createdAt: -1 });
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
         const newUsersToday = await User.countDocuments({
-            createdAt : { $gte : today }
+            createdAt: { $gte: today }
         });
 
-        
         const newEventsToday = await Event.countDocuments({
-            createdAt : { $gte : today }
+            createdAt: { $gte: today }
         });
 
-        
         const newMessagesToday = await Inbox.countDocuments({
-            createdAt : { $gte : today }
+            createdAt: { $gte: today }
         });
 
         let moriStatus = "unknown";
@@ -42,64 +49,64 @@ router.get("/", async (req, res) => {
             const data = await response.json();
             moriStatus = data.status;
         } catch (err) {
-            console.log("FastAPI not Reachable:", err.message);
+            console.log("FastAPI not reachable:", err.message);
         }
 
         res.json({
-            success : true,
+            success: true,
 
-            counts : {
-                users : totalUsers,
-                events : totalEvents,
-                messages : totalMessages
+            counts: {
+                users: totalUsers,
+                events: totalEvents,
+                messages: totalMessages
             },
 
-            today : {
-                users : newUsersToday,
-                events : newEventsToday,
-                messages : newMessagesToday
+            today: {
+                users: newUsersToday,
+                events: newEventsToday,
+                messages: newMessagesToday
             },
 
-            latest : {
-                user : lastUser
+            latest: {
+                user: lastUser
                     ? {
-                        name : lastUser.fullName || lastUser.username,
-                        email : lastUser.email,
-                        createdAt : lastUser.createdAt
+                        name: lastUser.fullName || lastUser.username,
+                        email: lastUser.email,
+                        createdAt: lastUser.createdAt
                     }
                     : null,
 
-                event : lastEvent
+                event: lastEvent
                     ? {
-                        title : lastEvent.title,
-                        createdAt : lastEvent.createdAt
+                        title: lastEvent.title,
+                        createdAt: lastEvent.createdAt
                     }
                     : null,
-                message : lastMessage
+
+                message: lastMessage
                     ? {
-                        title : lastMessage.title,
-                        createdaAt : lastMessage.createdAt
+                        title: lastMessage.title,
+                        createdAt: lastMessage.createdAt
                     }
                     : null
             },
 
-            server : {
-                status : "Online",
-                time : new Date()
+            server: {
+                status: "Online",
+                time: new Date()
             },
 
-            mori : {
-                status : moriStatus
+            mori: {
+                status: moriStatus
             }
-
         });
 
     } catch (err) {
-        res.status(500).json ({
-            success : false,
-            message : err.message
-        })
+        res.status(500).json({
+            success: false,
+            message: err.message
+        });
     }
-})
+});
 
 module.exports = router;
